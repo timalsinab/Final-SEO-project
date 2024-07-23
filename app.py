@@ -1,9 +1,25 @@
 import random
 import string
-from flask import Flask, render_template, redirect, url_for, flash, request, jsonify, session
+from flask import (
+    Flask,
+    render_template,
+    redirect,
+    url_for,
+    flash,
+    request,
+    jsonify,
+    session
+)
 from flask_bcrypt import Bcrypt
 from flask_behind_proxy import FlaskBehindProxy
-from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin, current_user
+from flask_login import (
+    LoginManager, 
+    login_user, 
+    logout_user, 
+    login_required, 
+    UserMixin, 
+    current_user
+) 
 from flask_migrate import Migrate
 from dotenv import load_dotenv
 from forms import LoginForm, RegistrationForm
@@ -13,7 +29,7 @@ from twilio.jwt.access_token.grants import VideoGrant
 import requests
 import os
 from bot import get_user_response
-from models import db , User, Course, Module, Lesson
+from models import db, User, Course, Module, Lesson
 import openai
 from datetime import datetime
 import threading
@@ -25,8 +41,10 @@ load_dotenv()
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 app = Flask(__name__, instance_relative_config=True)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', '9c7f5ed4fee35fed7a039ddba384397f')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///../instance/site.db')
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY',
+                                     '9c7f5ed4fee35fed7a039ddba384397f')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL',
+                                                  'sqlite:///../instance/site.db')
 
 # Initialize Flask extensions
 db.init_app(app)
