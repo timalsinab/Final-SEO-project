@@ -10,6 +10,10 @@
     />
     <link
       rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <link
+      rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
     />
   </head>
@@ -33,13 +37,18 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
       />
 
+      <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+      />
+
       <a href="{{ url_for('manage_courses') }}" class="navbar-brand"
         ><i class="fa fa-fw fa-book"></i> Courses</a
       >
-      <a href="#" class="navbar-brand"
+      <a href="{{ url_for('mock_interview') }}" class="navbar-brand"
         ><i class="fa fa-fw fa-lightbulb-o"></i> Interview Preparation</a
       >
-      <a href="#" class="navbar-brand"
+      <a href="{{ url_for('mock_interview') }}" class="navbar-brand"
         ><i class="fa fa-fw fa-video-camera"></i> Mock Interview</a
       >
       <a href="{{ url_for('chat') }}" class="navbar-brand"

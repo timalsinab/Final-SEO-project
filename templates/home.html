@@ -1,11 +1,14 @@
 {% extends "base.html" %} {% block title %} Home {% endblock %} {% block content
 %}
+
 <style>
   .container,
   body {
-    background: linear-gradient(to right, #121b2e, #3369a3);
+    background: linear-gradient(to right, #141e30, #243b55);
     color: white;
+    padding: 20px;
     border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 
   h1 {
@@ -22,17 +25,106 @@
     margin: 30px 0 40px 0;
     font-size: 1.75em;
   }
+
+  .button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-top: 20px;
+    font-size: 1.2em;
+    color: white;
+    background-color: #28a745;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .button:hover {
+    background-color: #218838;
+  }
+
+  .waiting-message {
+    margin-top: 20px;
+    font-size: 1.2em;
+  }
+
+  .hero-section {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .hero-section h1 {
+    font-size: 3em;
+    margin-bottom: 10px;
+  }
+
+  .hero-section p {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+  }
+
+  .hero-section .cta-button {
+    font-size: 1.5em;
+    background-color: #6c63ff;
+    padding: 15px 30px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+  }
+
+  .hero-section .cta-button:hover {
+    background-color: #5548c8;
+  }
+
+  .features-section {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 40px;
+  }
+
+  .feature {
+    text-align: center;
+    width: 30%;
+  }
+
+  .feature h3 {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+  }
+
+  .feature p {
+    font-size: 1.2em;
+  }
 </style>
+
 <div class="home">
-    <h1>Welcome, {{ current_user.username }}! <span class="wave">👋</span></h1>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <h1>Welcome, {{ current_user.username }}! <span class="wave">👋</span></h1>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-    <h2>Curious about what you can do on this app? You can:</h1>
+  <h2>Curious about what you can do on this app? You can:</h2>
 
-    <p> <a href="{{ url_for('manage_courses') }}"  style="color:#efe563; font-weight:bold">Explore Courses 💡</a>: Master Computer Science concepts using our engaging modules!</p> 
+  <p>
+    <a
+      href="{{ url_for('manage_courses') }}"
+      style="color: #efe563; font-weight: bold"
+      >Explore Courses 💡</a
+    >: Master Computer Science concepts using our engaging modules!
+  </p>
 
-    <p> <a href="#"  style="color:#efe563; font-weight:bold">Have A Mock Interview 👨🏻‍💻</a>: Sharpen your interview skills and boost your confidence!</p> 
+  <p>
+    <a
+      href="{{ url_for('mock_interview') }}"
+      style="color: #efe563; font-weight: bold"
+      >Have A Mock Interview 👨🏻‍💻</a
+    >: Sharpen your interview skills and boost your confidence!
+  </p>
 
-    <p> <a href="{{ url_for('chat') }}"  style="color:#efe563; font-weight:bold">Consult Your AI Tutor 💬</a>: Ask questions and have your problems solved in seconds!</p> 
+  <p>
+    <a href="{{ url_for('chat') }}" style="color: #efe563; font-weight: bold"
+      >Consult Your AI Tutor 💬</a
+    >: Ask questions and have your problems solved in seconds!
+  </p>
 </div>
+
 {% endblock %}
