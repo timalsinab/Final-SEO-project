@@ -2,13 +2,14 @@ from flask import Flask, render_template, redirect, url_for, flash, request,json
 
 from flask_bcrypt import Bcrypt
 from flask_behind_proxy import FlaskBehindProxy
-from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin
+from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin, current_user
 from flask_migrate import Migrate
 from forms import LoginForm, RegistrationForm
 import os
 from bot import get_user_response
 from models import db , User, Course, Module, Lesson
 from openai import OpenAI
+from datetime import datetime
 
 
 api_key = os.environ.get("OPENAI_API_KEY")
@@ -29,7 +30,8 @@ with app.app_context():
 
 @login_manager.user_loader
 def load_user(user_id):
-    return db.session.get(User, int(user_id))
+    return User.query.get(int(user_id))
+    #return db.session.get(User, int(user_id))
 
 
 @app.route("/")
@@ -46,7 +48,7 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+        user = User(username=form.username.data, email=form.email.data, password_hash=hashed_password)
         db.session.add(user)
         db.session.commit()
         flash('Your account has been created! You are now able to log in', 'success')
@@ -58,7 +60,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        if user and bcrypt.check_password_hash(user.password, form.password.data):
+        if user and bcrypt.check_password_hash(user.password_hash, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
             return redirect(next_page) if next_page else redirect(url_for('home'))
@@ -72,18 +74,18 @@ def logout():
     return redirect(url_for('home'))
 
 
-@app.route('/courses', methods=['GET', 'POST'])
+@app.route('/courses', methods=['GET'])
 def manage_courses():
-    if request.method == 'POST':
+    """if request.method == 'POST':
         title = request.form['title']
         description = request.form['description']
         new_course = Course(title=title, description=description)
         db.session.add(new_course)
         db.session.commit()
         flash('Course added successfully!', 'success')
-        return redirect(url_for('manage_courses'))
-    
-    courses = Course.query.all()
+        return redirect(url_for('manage_courses'))"""
+    id = current_user.id
+    courses = Course.query.filter_by(user_id=id).all()
     return render_template('courses.html', courses=courses)
 
 @app.route('/courses/<int:course_id>/delete', methods=['POST'])
@@ -251,11 +253,13 @@ def generate_modules_and_lessons(course_title, course_description, level):
     return modules, self_check_results"""
 
 @app.route('/generate_course', methods=['GET', 'POST'])
+@login_required
 def generate_course():
     if request.method == 'POST':
         title = request.form['title']
         description = request.form['description']
         level = request.form['level']
+        user_id = current_user.id
 
         existing_course = Course.query.filter_by(description=description).first()
         if existing_course:
@@ -264,7 +268,7 @@ def generate_course():
 
         modules = generate_modules_and_lessons(title, description, level)
         print(modules)
-        new_course = Course(title=title, description=description)
+        new_course = Course(title=title, description=description, user_id=user_id)
         db.session.add(new_course)
         db.session.commit()
 
@@ -308,7 +312,7 @@ def complete_course(course_id):
 @app.route('/completed_courses')
 @login_required
 def completed_courses():
-    completed_courses = Course.query.filter_by(completed=True).all()
+    completed_courses = Course.query.filter_by(completed=True, user_id=current_user.id).all()
     return render_template('completed_courses.html', completed_courses=completed_courses)
 
 @app.route('/courses/<int:course_id>/complete', methods=['POST'])
@@ -319,5 +323,51 @@ def mark_course_completed(course_id):
     db.session.commit()
     flash('Course marked as completed!', 'success')
     return redirect(url_for('manage_courses'))
+
+
+def generate_quiz(course_title, course_description):
+    prompt = f"Generate a 5-question quiz based on the following course: {course_title}. Description: {course_description}. Provide questions and multiple choice answers, with one correct answer for each question. Format: Q: <question>, A: <option1>, B: <option2>, C: <option3>, D: <option4>, Answer: <correct option letter>"
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=1500
+    )
+    quiz_content = response.choices[0].message.content.split('\n')
+    
+    quiz = []
+    current_question = {}
+    for line in quiz_content:
+        if line.startswith("Q:"):
+            if current_question:
+                quiz.append(current_question)
+            current_question = {"question": line[3:], "options": {}}
+        elif line.startswith("A:") or line.startswith("B:") or line.startswith("C:") or line.startswith("D:"):
+            current_question["options"][line[0]] = line[3:]
+        elif line.startswith("Answer:"):
+            current_question["answer"] = line.split(': ')[1]
+    if current_question:
+        quiz.append(current_question)
+    
+    return quiz
+@app.route('/courses/<int:course_id>/submit_quiz', methods=['POST'])
+@login_required
+def submit_quiz(course_id):
+    course = Course.query.get(course_id)
+    if not course or course.user_id != current_user.id:
+        flash('Course not found or you do not have permission to take this quiz.', 'danger')
+        return redirect(url_for('manage_courses'))
+
+    quiz = generate_quiz(course.title, course.description)
+
+    score = 0
+    total_questions = len(quiz)
+    for index, question in enumerate(quiz):
+        user_answer = request.form.get(f"question{index + 1}")
+        if user_answer == question['answer']:
+            score += 1
+
+    return render_template('quiz_result.html', course=course, score=score, total_questions=total_questions)
+
+
 if __name__ == '__main__':
     app.run(debug=True)
