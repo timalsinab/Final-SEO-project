@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='login/styles.css') }}">
+</head>
 <div class="container">
     <form method="POST">
         {{ form.hidden_tag() }}

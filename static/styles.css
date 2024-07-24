@@ -2,7 +2,11 @@
 .navbar {
   background-color: #041b37;
 }
-
+body {
+  background: linear-gradient(to right, #141e30, #243b55);
+  color: white;
+  margin: 0; /* Ensure no margin around the body */
+}
 .home {
   position: absolute;
   top: 50%;
@@ -63,7 +67,7 @@ a.navbar-brand:hover {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f4f4f9;
+  padding-bottom: 100px;
 }
 
 /* Chat box styling */

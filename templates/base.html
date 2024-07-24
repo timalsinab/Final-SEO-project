@@ -81,7 +81,7 @@
     </div>
 
     <!-- Chat overlay HTML -->
-    {% if request.endpoint != 'chat' %}
+    {% if request.endpoint != 'chat' and current_user.is_authenticated%}
     <div id="chat-overlay">
       <div id="chatbox">
         <div id="chat-output"></div>
