@@ -1,0 +1,58 @@
+/* Home page styling */
+.navbar {
+    background-color: #041b37;
+  }
+  body {
+    background: linear-gradient(to right, #141e30, #243b55);
+    color: white;
+  }
+  .container {
+    max-width: 500px;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    margin: auto;
+  }
+  .form-control-label, .form-check-label {
+    color: white;
+  }
+  .form-control-lg {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid #ced4da;
+  }
+  .form-control-lg:focus {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: white;
+    border-color: #80bdff;
+  }
+  .btn {
+    margin-right: 10px;
+  }
+  .btn-outline-info {
+    color: #fff;
+    border-color: #17a2b8;
+  }
+  .btn-outline-info:hover {
+    background-color: #17a2b8;
+    color: white;
+  }
+  .btn-outline-secondary {
+    color: #fff;
+    border-color: #6c757d;
+  }
+  .btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: white;
+  }
+  .form-group.buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .form-group-remember {
+    padding-left: 20px;
+  }
+  

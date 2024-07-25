@@ -3,6 +3,12 @@
 {% block title %}Generate Course{% endblock %}
 
 {% block content %}
+<style>
+    body {
+        background: linear-gradient(to right, #141e30, #243b55);
+        color: white;
+    }
+</style>
 <div class="container">
     <h2>Generate New Course</h2>
     <form method="POST" action="{{ url_for('generate_course') }}">

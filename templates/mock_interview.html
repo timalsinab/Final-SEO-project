@@ -1,0 +1,149 @@
+{% extends "base.html" %} {% block title %}Mock Interview{% endblock %} {% block
+content %}
+<style>
+  .container {
+    background: linear-gradient(to right, #141e30, #243b55);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    margin-top: 40px;
+    font-size: 2em;
+  }
+
+  p {
+    font-size: 1.2em;
+  }
+
+  .button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-top: 20px;
+    font-size: 1.2em;
+    color: white;
+    background-color: #28a745;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .button:hover {
+    background-color: #218838;
+  }
+
+  .waiting-message {
+    margin-top: 20px;
+    font-size: 1.2em;
+  }
+
+  .hero-section {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .hero-section h1 {
+    font-size: 3em;
+    margin-bottom: 10px;
+  }
+
+  .hero-section p {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+  }
+
+  .hero-section .cta-button {
+    font-size: 1.5em;
+    background-color: #6c63ff;
+    padding: 15px 30px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+  }
+
+  .hero-section .cta-button:hover {
+    background-color: #5548c8;
+  }
+
+  .features-section {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 40px;
+  }
+
+  .feature {
+    text-align: center;
+    width: 30%;
+  }
+
+  .feature h3 {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+  }
+
+  .feature p {
+    font-size: 1.2em;
+  }
+</style>
+
+<div class="container mt-4">
+  <h1>Welcome, {{ current_user.username }}!</h1>
+  <div class="hero-section">
+    <h1>Ace Your Interviews with Peer Practice</h1>
+    <p>
+      Don't miss out on a great job opportunity. Practice live interviews with
+      peers.
+    </p>
+    <button class="button" id="join-queue-button">Join Interview Queue</button>
+    <p class="waiting-message" id="waiting-message" style="display: none">
+      Waiting for a partner to join...
+    </p>
+  </div>
+
+  <script>
+    document
+      .getElementById("join-queue-button")
+      .addEventListener("click", function (event) {
+        event.preventDefault();
+        fetch('{{ url_for("join_queue") }}')
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.matched) {
+              window.location.href =
+                '{{ url_for("video_call", room_name="") }}' + data.room_name;
+            } else {
+              document.getElementById("waiting-message").style.display =
+                "block";
+              checkForMatch();
+            }
+          })
+          .catch((error) => console.error("Error joining queue:", error));
+      });
+
+    function checkForMatch() {
+      setInterval(() => {
+        fetch('{{ url_for("check_match") }}')
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Match check response:", data);
+            if (data.matched) {
+              console.log("Redirecting to room:", data.room_name);
+              window.location.href =
+                '{{ url_for("video_call", room_name="") }}' + data.room_name;
+            }
+          })
+          .catch((error) => console.error("Error checking match:", error));
+      }, 3000); // Check every 3 seconds
+    }
+  </script>
+</div>
+{% endblock %}

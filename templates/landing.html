@@ -11,6 +11,10 @@
     background: #243b55;
     color: white;
   }
+  .logo {
+    max-width: 100%;
+    height: auto;
+  }
   .container {
     /*display: flex;*/
     justify-content: center;
@@ -102,6 +106,7 @@
   } */
 </style>
 <div class="container">
+  <img src="{{ url_for('static', filename='logo.png') }}" alt="E-Learn Logo" class="logo">
   <h1>Welcome to E-Learn</h1>
   <div class="wrapper">
     <div class="static-txt">Your new </div>

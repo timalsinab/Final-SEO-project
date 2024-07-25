@@ -3,19 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}{% endblock %} - App Name</title>
+    <title>{% block title %}{% endblock %} - E-Learn</title>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='styles.css') }}"
     />
     <link
       rel="stylesheet"
+      href="{{ url_for('static', filename='overlay.css') }}"
+    />
+    <link
+      rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
     />
+    <style>
+      #chatbox {
+        display: none; /* Hide chatbox initially */
+      }
+    </style>
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
-      <a class="navbar-brand" href="{{ url_for('home') }}">App Name</a>
+      <a class="navbar-brand" href="{{ url_for('home') }}">E-Learn</a>
       <button
         class="navbar-toggler"
         type="button"
@@ -33,13 +42,15 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
       />
 
+      <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+      />
+
       <a href="{{ url_for('manage_courses') }}" class="navbar-brand"
         ><i class="fa fa-fw fa-book"></i> Courses</a
       >
-      <a href="#" class="navbar-brand"
-        ><i class="fa fa-fw fa-lightbulb-o"></i> Interview Preparation</a
-      >
-      <a href="#" class="navbar-brand"
+      <a href="{{ url_for('mock_interview') }}" class="navbar-brand"
         ><i class="fa fa-fw fa-video-camera"></i> Mock Interview</a
       >
       <a href="{{ url_for('chat') }}" class="navbar-brand"
@@ -60,7 +71,7 @@
             <a class="nav-link" href="{{ url_for('register') }}">Register</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('landing') }}">Landing</a>
+            <a class="nav-link" href="{{ url_for('landing') }}">Home</a>
           </li>
           {% endif %}
         </ul>
@@ -74,6 +85,20 @@
       {% endfor %} {% endif %} {% endwith %}{% block content %}{% endblock %}
     </div>
 
+    <!-- Chat overlay HTML -->
+    {% if request.endpoint != 'chat' and current_user.is_authenticated%}
+    <div id="chat-overlay">
+      <div id="chatbox">
+        <div id="chat-output"></div>
+        <form id="chat-input-form">
+          <input type="text" id="chat-input" placeholder="Type your message...">
+          <button type="submit">Send</button>
+        </form>
+      </div>
+      <button id="chat-toggle">Chat</button>
+    </div>
+    {% endif %}
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -82,6 +107,35 @@
       $(document).ready(function () {
         $(".navbar-nav>li>a").on("click", function () {
           $(".navbar-collapse").collapse("hide");
+        });
+        
+        // Toggle chatbox visibility
+        document.getElementById('chat-toggle').addEventListener('click', function () {
+          const chatbox = document.getElementById('chatbox');
+          chatbox.style.display = chatbox.style.display === 'none' ? 'flex' : 'none';
+        });
+
+        // Handle form submission
+        document.getElementById('chat-input-form').addEventListener('submit', function (event) {
+          event.preventDefault();
+          const userInput = document.getElementById('chat-input').value;
+          
+          fetch('/chat', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message: userInput })
+          })
+          .then(response => response.json())
+          .then(data => {
+            const chatOutput = document.getElementById('chat-output');
+            chatOutput.innerHTML += `<div class="user-message">User: ${userInput}</div>`;
+            chatOutput.innerHTML += `<div class="bot-message">Bot: ${data.message}</div>`;
+            document.getElementById('chat-input').value = '';
+            chatOutput.scrollTop = chatOutput.scrollHeight;
+          })
+          .catch(error => console.error('Error:', error));
         });
       });
     </script>
