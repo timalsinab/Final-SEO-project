@@ -14,7 +14,8 @@ import requests
 import os
 from bot import get_user_response
 from models import db , User, Course, Module, Lesson
-from openai import OpenAI
+import openai 
+import threading 
 
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
@@ -199,7 +200,7 @@ def manage_courses():
         flash('Course added successfully!', 'success')
         return redirect(url_for('manage_courses'))"""
     id = current_user.id
-    courses = Course.query.filter_by(user_id=id).all()
+    courses = Course.query.filter_by(user_id=id,completed=False).all()
     return render_template('courses.html', courses=courses)
 
 @app.route('/courses/<int:course_id>/delete', methods=['POST'])
@@ -375,9 +376,10 @@ def generate_course():
         level = request.form['level']
         user_id = current_user.id
 
-        existing_course = Course.query.filter_by(description=description).first()
-        if existing_course:
-            flash('Course with this description already exists.', 'danger')
+        description_course = Course.query.filter_by(user_id=current_user.id, description=description).first()
+        title_course = Course.query.filter_by(user_id=current_user.id, title=title).first()
+        if description_course or title_course:
+            flash('Course with this description already exists or title already exists.', 'danger')
             return redirect(url_for('generate_course'))
 
         modules = generate_modules_and_lessons(title, description, level)
@@ -437,6 +439,16 @@ def mark_course_completed(course_id):
     db.session.commit()
     flash('Course marked as completed!', 'success')
     return redirect(url_for('manage_courses'))
+
+@app.route('/courses/<int:course_id>/incomplete', methods=['POST'])
+@login_required
+def mark_course_incomplete(course_id):
+    course = Course.query.get_or_404(course_id)
+    course.completed = False
+    course.completed_at = None
+    db.session.commit()
+    flash('Course marked as incomplete!', 'success')
+    return redirect(url_for('completed_courses'))
 
 if __name__ == '__main__':
     app.run(debug=True)

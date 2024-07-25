@@ -24,8 +24,8 @@ class User(db.Model, UserMixin):
 class Course(db.Model):
     __tablename__ = 'courses'
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(50), nullable=False, unique=True)
-    description = db.Column(db.String(250), nullable=False, unique=True)
+    title = db.Column(db.String(50), nullable=False, unique=False)
+    description = db.Column(db.String(250), nullable=False, unique=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     modules = db.relationship('Module', backref='course', lazy=True, cascade="all, delete-orphan")
     enrolled = db.Column(db.Boolean, default=False)
@@ -52,7 +52,7 @@ class Module(db.Model):
 class Lesson(db.Model):
     __tablename__ = 'lessons'
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(50), nullable=False, unique=True)
+    title = db.Column(db.String(50), nullable=False, unique=False)
     content = db.Column(db.Text, nullable=False)
     quiz = db.Column(db.Text, nullable=True)  # Assuming quiz is stored as JSON or similar
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

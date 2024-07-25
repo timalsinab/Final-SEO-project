@@ -1,0 +1,22 @@
+<!-- templates/quiz.html -->
+{% extends "base.html" %}
+{% block title %}Quiz{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h1>Quiz for {{ course.title }}</h1>
+    <form method="POST" action="{{ url_for('view_quiz', quiz_id=quiz.id) }}">
+        {% for question in quiz %}
+        <div class="mb-3">
+            <label class="form-label">{{ question['question'] }}</label>
+            {% for option, text in question['options'].items() %}
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="question{{ loop.index }}" value="{{ option }}" required>
+                <label class="form-check-label">{{ option }}) {{ text }}</label>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+{% endblock %}
