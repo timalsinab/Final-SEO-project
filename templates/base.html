@@ -24,7 +24,7 @@
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
-      <a class="navbar-brand" href="{{ url_for('home') }}">E-Learn</a>
+      <a class="navbar-brand" href="{{ url_for('landing') }}">E-Learn</a>
       <button
         class="navbar-toggler"
         type="button"
@@ -47,6 +47,9 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
       />
 
+      <a href="{{ url_for('home') }}" class="navbar-brand"
+        ><i class="fa fa-home"></i> Home</a
+      >
       <a href="{{ url_for('manage_courses') }}" class="navbar-brand"
         ><i class="fa fa-fw fa-book"></i> Courses</a
       >
