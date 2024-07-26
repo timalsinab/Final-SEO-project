@@ -16,6 +16,7 @@ from bot import get_user_response
 from models import db , User, Course, Module, Lesson
 import openai 
 import threading 
+import datetime
 
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
